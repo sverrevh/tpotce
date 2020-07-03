@@ -22,8 +22,6 @@ networks:
   medpot_local:
   rdpy_local:
   tanner_local:
-  ewsposter_local:
-  spiderfoot_local:
 
 services:
 
@@ -513,52 +511,7 @@ services:
 #### Tools
 ##################
 
-# Cyberchef service
-  cyberchef:
-    container_name: cyberchef
-    restart: always
-    networks:
-     - cyberchef_local
-    ports:
-     - "127.0.0.1:64299:8000"
-    image: "dtagdevsec/cyberchef:2006"
-    read_only: true
-
 #### ELK
-## Elasticsearch service
-  elasticsearch:
-    container_name: elasticsearch
-    restart: always
-    environment:
-     - bootstrap.memory_lock=true
-     - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
-     - ES_TMPDIR=/tmp
-    cap_add:
-     - IPC_LOCK
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    mem_limit: 4g
-    ports:
-     - "127.0.0.1:64298:9200"
-    image: "dtagdevsec/elasticsearch:2006"
-    volumes:
-     - /data:/data
-
-## Kibana service
-  kibana:
-    container_name: kibana
-    restart: always
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    ports:
-     - "127.0.0.1:64296:5601"
-    image: "dtagdevsec/kibana:2006"
 
 ## Logstash service
   logstash:
@@ -572,40 +525,7 @@ services:
     image: "dtagdevsec/logstash:2006"
     volumes:
      - /data:/data
-
-## Elasticsearch-head service
-  head:
-    container_name: head
-    restart: always
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    ports:
-     - "127.0.0.1:64302:9100"
-    image: "dtagdevsec/head:2006"
-    read_only: true
-
-# Ewsposter service
-  ewsposter:
-    container_name: ewsposter
-    restart: always
-    networks:
-     - ewsposter_local
-    environment:
-     - EWS_HPFEEDS_ENABLE=false
-     - EWS_HPFEEDS_HOST=host
-     - EWS_HPFEEDS_PORT=port
-     - EWS_HPFEEDS_CHANNELS=channels
-     - EWS_HPFEEDS_IDENT=user
-     - EWS_HPFEEDS_SECRET=secret
-     - EWS_HPFEEDS_TLSCERT=false
-     - EWS_HPFEEDS_FORMAT=json
-    env_file:
-     - /opt/tpot/etc/compose/elk_environment
-    image: "dtagdevsec/ewsposter:2006"
-    volumes:
-     - /data:/data
-     - /data/ews/conf/ews.ip:/opt/ewsposter/ews.ip
+     - /opt/logstash.conf:/etc/logstash/conf.d/logstash.conf
 
 # Nginx service
   nginx:
@@ -639,15 +559,3 @@ services:
     ### Enable the following volumes if you set HEIMDALL_PERSIST=YES
     # - /data/nginx/heimdall/database:/var/lib/nginx/html/database
     # - /data/nginx/heimdall/storage:/var/lib/nginx/html/storage
-
-# Spiderfoot service
-  spiderfoot:
-    container_name: spiderfoot
-    restart: always
-    networks:
-     - spiderfoot_local
-    ports:
-     - "127.0.0.1:64303:8080"
-    image: "dtagdevsec/spiderfoot:2006"
-    volumes:
-     - /data/spiderfoot/spiderfoot.db:/home/spiderfoot/spiderfoot.db
