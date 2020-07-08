@@ -12,7 +12,7 @@ TimeoutSec=infinity
 ExecStartPre=-/opt/tpot/bin/updateip.sh
 
 # Clear state or if persistence is enabled rotate and compress logs from /data
-ExecStartPre=-/bin/bash -c '/opt/tpot/bin/clean.sh on'
+ExecStartPre=-/bin/bash -c '/opt/tpot/bin/clean.sh off'
 
 # Remove old containers, images and volumes
 ExecStartPre=-/usr/bin/docker-compose -f /opt/tpot/etc/tpot.yml down -v
