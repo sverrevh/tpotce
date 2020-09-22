@@ -9,6 +9,7 @@ RUN sed -i 's/dl-cdn/dl-2/g' /etc/apk/repositories && \
              build-base \
 	     ca-certificates \
              git \
+	     libcap \
              libffi-dev \
 	     openssl \
              openssl-dev \
@@ -20,15 +21,16 @@ RUN sed -i 's/dl-cdn/dl-2/g' /etc/apk/repositories && \
              python3-dev && \
     mkdir -p /opt && \
     cd /opt/ && \
-    git clone https://gitlab.com/bontchev/elasticpot.git/ && \
-    cd elasticpot && \
-    git checkout d12649730d819bd78ea622361b6c65120173ad45 && \
+    git clone https://gitlab.com/bontchev/ipphoney.git/ && \
+    cd ipphoney && \
+    git checkout db8c6e91bff27b5c376339c5effbb45355897ab5 && \
     pip3 install -r requirements.txt && \
+    setcap cap_net_bind_service=+ep /usr/bin/python3.8 && \
 #
 # Setup user, groups and configs
-    addgroup -g 2000 elasticpot && \
-    adduser -S -H -s /bin/ash -u 2000 -D -g 2000 elasticpot && \
-    mv /root/dist/honeypot.cfg /opt/elasticpot/etc/ && \
+    addgroup -g 2000 ipphoney && \
+    adduser -S -H -s /bin/ash -u 2000 -D -g 2000 ipphoney && \
+    mv /root/dist/honeypot.cfg /opt/ipphoney/etc/ && \
 #
 # Clean up
     apk del --purge build-base \
@@ -40,8 +42,8 @@ RUN sed -i 's/dl-cdn/dl-2/g' /etc/apk/repositories && \
     rm -rf /root/* && \
     rm -rf /var/cache/apk/*
 #
-# Start elasticpot
+# Start ipphoney
 STOPSIGNAL SIGINT
-USER elasticpot:elasticpot
-WORKDIR /opt/elasticpot/
-CMD ["/usr/bin/python3","elasticpot.py"]
+USER ipphoney:ipphoney
+WORKDIR /opt/ipphoney/
+CMD ["/usr/bin/python3","ipphoney.py"]

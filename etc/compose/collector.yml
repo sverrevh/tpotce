@@ -29,7 +29,7 @@ services:
     mem_limit: 4g
     ports:
      - "0.0.0.0:64298:9200"
-    image: "dtagdevsec/elasticsearch:2006"
+    image: "ghcr.io/telekom-security/elasticsearch:2006"
     volumes:
      - /data:/data
 
@@ -42,7 +42,7 @@ services:
         condition: service_healthy
     ports:
      - "127.0.0.1:64296:5601"
-    image: "dtagdevsec/kibana:2006"
+    image: "ghcr.io/telekom-security/kibana:2006"
 
 ## Elasticsearch-head service
   head:
@@ -53,7 +53,7 @@ services:
         condition: service_healthy
     ports:
      - "127.0.0.1:64302:9100"
-    image: "dtagdevsec/head:2006"
+    image: "ghcr.io/telekom-security/head:2006"
     read_only: true
 
 # Nginx service
@@ -79,7 +79,7 @@ services:
     ports:
      - "64297:64297"
      - "127.0.0.1:64304:64304"
-    image: "dtagdevsec/nginx:2006"
+    image: "ghcr.io/telekom-security/nginx:2006"
     read_only: true
     volumes:
      - /data/nginx/cert/:/etc/nginx/cert/:ro
