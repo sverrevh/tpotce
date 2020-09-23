@@ -11,7 +11,6 @@ networks:
   conpot_local_ipmi:
   conpot_local_kamstrup_382:
   cowrie_local:
-  cyberchef_local:
   dicompot_local:
   dionaea_local:
   elasticpot_local:
