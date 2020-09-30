@@ -1,0 +1,135 @@
+filebeat.inputs:
+    - type: log
+      paths:
+        - /data/fatt/log/fatt.log
+      fields:
+        service: Fatt
+    
+    - type: log
+      paths:
+        - /data/suricata/log/eve.json
+      fields:
+        service: Suricata
+    
+    - type: log
+      paths:
+        - /data/p0f/log/p0f.json
+      fields:
+        service: P0f
+    
+    - type: log
+      paths:
+        - /data/adbhoney/log/adbhoney.json
+      fields:
+        service: Adbhoney
+    
+    - type: log
+      paths:
+        - /data/ciscoasa/log/ciscoasa.log
+      fields:
+        service: Ciscoasa
+
+    - type: log
+      paths:
+        - /data/citrixhoneypot/logs/server.log
+      fields:
+        service: CitrixHoneypot
+
+    - type: log
+      paths:
+        - /data/conpot/log/*.json
+      fields:
+        service: ConPot
+    
+    - type: log
+      paths:
+        - /data/cowrie/log/cowrie.json
+      fields:
+        service: Cowrie
+    
+    - type: log
+      paths:
+        - /data/dionaea/log/dionaea.json
+      fields:
+        service: Dionaea
+    
+    - type: log
+      paths:
+        - /data/dicompot/log/dicompot.log
+      fields:
+        service: Dicompot
+
+    - type: log
+      paths:
+        - /data/elasticpot/log/elasticpot.json
+      fields:
+        service: ElasticPot
+
+    - type: log
+      paths:
+        - /data/glutton/log/glutton.log
+      fields:
+        service: Glutton
+
+    - type: log
+      paths:
+        - /data/heralding/log/auth.csv
+      fields:
+        service: Heralding
+
+    - type: log
+      paths:
+        - /data/honeypy/log/json.log
+      fields:
+        service: Honeypy
+
+    - type: log
+      paths:
+        - /data/honeysap/log/honeysap-external.log
+      fields:
+        service: Honeysap
+
+    - type: log
+      paths:
+        - /data/honeytrap/log/attackers.json
+      fields:
+        service: Honeytrap
+
+    - type: log
+      paths:
+        - /data/ipphoney/log/ipphoney.json
+      fields:
+        service: Ipphoney
+
+    - type: log
+      paths:
+        - /data/mailoney/log/commands.log
+      fields:
+        service: Mailoney
+
+    - type: log
+      paths:
+        - /data/medpot/log/medpot.log
+      fields:
+        service: Medpot
+
+    - type: log
+      paths:
+        - /data/rdpy/log/rdpy.log
+      fields:
+        service: Rdpy
+
+    - type: log
+      paths:
+        - /data/nginx/log/access.log
+      fields:
+        service: NGINX
+
+    - type: log
+      paths:
+        - /data/tanner/log/tanner_report.json
+      fields:
+        service: Tanner
+
+output.logstash:
+    hosts: ["collector_ip:64299"]
