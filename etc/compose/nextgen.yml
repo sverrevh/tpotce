@@ -526,18 +526,14 @@ services:
 
 #### ELK
 
-## Logstash service
-  logstash:
-    container_name: logstash
+## Filebeats service
+  filebeats:
+    container_name: filebeats
     restart: always
-    environment:
-     - LS_JAVA_OPTS=-Xms1024m -Xmx1024m
-    env_file:
-     - /opt/tpot/etc/compose/elk_environment
-    image: "ghcr.io/telekom-security/logstash:2006"
+    image: "docker.elastic.co/beats/filebeat:7.9.2"
     volumes:
      - /data:/data
-     - /opt/logstash.conf:/etc/logstash/conf.d/logstash.conf
+     - /opt/filebeats.yml:/usr/share/filebeat/filebeat.yml:ro
 
 # Nginx service
   nginx:
