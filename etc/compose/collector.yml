@@ -28,7 +28,7 @@ services:
         hard: 65536
     mem_limit: 4g
     ports:
-     - "0.0.0.0:64298:9200"
+     - "127.0.0.1:64298:9200"
     image: "ghcr.io/telekom-security/elasticsearch:2006"
     volumes:
      - /data:/data
@@ -62,6 +62,11 @@ services:
     restart: always
     environment:
     - LS_JAVA_OPTS=-Xms1024m -Xmx1024m
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "64299:64299"
     env_file:
     - /opt/tpot/etc/compose/elk_environment
     image: "ghcr.io/telekom-security/logstash:2006"
