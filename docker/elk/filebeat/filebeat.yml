@@ -153,5 +153,9 @@ filebeat.inputs:
       type: Tanner
     fields_under_root: true
 
+processors:
+  - drop_fields:
+      fields: ["agent.ephemeral_id", "agent.hostname", "agent.id", "agent.name", "agent.type", "agent.version", "ecs.version", "input.type", "log.file.path", "log.offset"]
+
 output.logstash:
     hosts: ["collector_ip:64299"]
