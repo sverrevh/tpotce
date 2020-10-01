@@ -155,7 +155,13 @@ filebeat.inputs:
 
 processors:
   - drop_fields:
-      fields: ["agent.ephemeral_id", "agent.hostname", "agent.id", "agent.name", "agent.type", "agent.version", "ecs.version", "input.type", "log.file.path", "log.offset"]
+      fields: ["agent.ephemeral_id", "agent.hostname", "agent.id", "agent.name", "agent.type", "agent.version", "ecs.version", "input.type", "log.file.path", "log.offset", "host"]
+  - add_fields:
+      target: host_info
+      fields:
+        exit_ip: "${MY_EXTIP}"
+        in_ip: "${MY_INTIP}"
+        hostname: "${MY_HOSTNAME}"
 
 output.logstash:
     hosts: ["collector_ip:64299"]
