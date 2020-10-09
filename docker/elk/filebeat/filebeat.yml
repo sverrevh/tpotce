@@ -1,161 +1,181 @@
 filebeat.inputs:
-  - type: log
+  - enabled: true
     paths:
       - /data/fatt/log/fatt.log
     fields:
       type: Fatt
     fields_under_root: true
   
-  - type: log
+  - enabled: true
     paths:
       - /data/suricata/log/eve.json
     fields:
       type: Suricata
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
   
-  - type: log
+  - enabled: true
     paths:
       - /data/p0f/log/p0f.json
     fields:
       type: P0f
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
   
-  - type: log
+  - enabled: true
     paths:
       - /data/adbhoney/log/adbhoney.json
     fields:
       type: Adbhoney
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
   
-  - type: log
+  - enabled: true
     paths:
       - /data/ciscoasa/log/ciscoasa.log
     fields:
       type: Ciscoasa
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/citrixhoneypot/logs/server.log
     fields:
       type: CitrixHoneypot
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/conpot/log/*.json
     fields:
       type: ConPot
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
   
-  - type: log
+  - enabled: true
     paths:
       - /data/cowrie/log/cowrie.json
     fields:
       type: Cowrie
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
   
-  - type: log
+  - enabled: true
     paths:
       - /data/dionaea/log/dionaea.json
     fields:
       type: Dionaea
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
   
-  - type: log
+  - enabled: true
     paths:
       - /data/dicompot/log/dicompot.log
     fields:
       type: Dicompot
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/elasticpot/log/elasticpot.json
     fields:
       type: ElasticPot
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
 
-  - type: log
+  - enabled: true
     paths:
       - /data/glutton/log/glutton.log
     fields:
       type: Glutton
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/heralding/log/auth.csv
     fields:
       type: Heralding
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/honeypy/log/json.log
     fields:
       type: Honeypy
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/honeysap/log/honeysap-external.log
     fields:
       type: Honeysap
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/honeytrap/log/attackers.json
     fields:
       type: Honeytrap
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
 
-  - type: log
+  - enabled: true
     paths:
       - /data/ipphoney/log/ipphoney.json
     fields:
       type: Ipphoney
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
 
-  - type: log
+  - enabled: true
     paths:
       - /data/mailoney/log/commands.log
     fields:
       type: Mailoney
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/medpot/log/medpot.log
     fields:
       type: Medpot
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/rdpy/log/rdpy.log
     fields:
       type: Rdpy
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/nginx/log/access.log
     fields:
       type: NGINX
     fields_under_root: true
 
-  - type: log
+  - enabled: true
     paths:
       - /data/tanner/log/tanner_report.json
     fields:
       type: Tanner
     fields_under_root: true
+    json.keys_under_root: true
+    json.overwrite_keys: true 
 
 processors:
   - drop_fields:
-      fields: ["agent.ephemeral_id", "agent.hostname", "agent.id", "agent.name", "agent.type", "agent.version", "ecs.version", "input.type", "log.file.path", "log.offset", "host"]
+      fields: ["agent", "ecs", "log", "host", "@metadata"]
   - add_fields:
       target: host_info
       fields:
@@ -164,4 +184,4 @@ processors:
         hostname: "${MY_HOSTNAME}"
 
 output.logstash:
-    hosts: ["collector_ip:64299"]
+  hosts: ["<YOUR_CENTRAL_LOGSTASH_IP>:64299"]

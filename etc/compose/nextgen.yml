@@ -537,6 +537,7 @@ services:
     volumes:
      - /data:/data
      - /opt/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+     - /opt/fields.yml:/usr/share/filebeat/fields.yml:ro
 
 # Nginx service
   nginx:
