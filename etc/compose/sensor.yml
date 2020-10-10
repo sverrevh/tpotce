@@ -404,7 +404,7 @@ services:
     tty: true
     networks:
      - tanner_local
-    image: "ghcr.io/telekom-security/tanner:2006"
+    image: "theoklein/tanner:2006"
     read_only: true
     volumes:
      - /data/tanner/log:/var/log/tanner
@@ -421,7 +421,7 @@ services:
 #    tty: true
 #    networks:
 #     - tanner_local
-#    image: "ghcr.io/telekom-security/tanner:2006"
+#    image: "theoklein/tanner:2006"
 #    command: tannerweb
 #    read_only: true
 #    volumes:
@@ -438,7 +438,7 @@ services:
     tty: true
     networks:
      - tanner_local
-    image: "ghcr.io/telekom-security/tanner:2006"
+    image: "theoklein/tanner:2006"
     command: tanner
     read_only: true
     volumes:

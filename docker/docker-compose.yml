@@ -96,7 +96,7 @@ services:
 ## Tanner API Service
   tanner_api:
     build: tanner/tanner/.
-    image: "ghcr.io/telekom-security/tanner:2006"
+    image: "theoklein/tanner:2006"
 
 ## Snare Service
   snare:
