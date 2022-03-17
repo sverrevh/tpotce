@@ -21,8 +21,8 @@ myTPOTCOMPOSE="/opt/tpot/etc/tpot.yml"
 myLSB_STABLE_SUPPORTED="stretch buster"
 myLSB_TESTING_SUPPORTED="stable"
 myREMOTESITES="https://hub.docker.com https://github.com https://pypi.python.org https://debian.org https://listbot.sicherheitstacho.eu"
-myPREINSTALLPACKAGES="aria2 apache2-utils cracklib-runtime curl dialog figlet fuse grc libcrack2 libpq-dev lsb-release netselect-apt net-tools software-properties-common toilet"
-myINSTALLPACKAGES="aria2 apache2-utils apparmor apt-transport-https aufs-tools bash-completion build-essential ca-certificates cgroupfs-mount cockpit cockpit-docker console-setup console-setup-linux cracklib-runtime curl debconf-utils dialog dnsutils docker.io docker-compose ethtool fail2ban figlet genisoimage git glances grc haveged html2text htop iptables iw jq kbd libcrack2 libltdl7 libpam-google-authenticator man mosh multitail netselect-apt net-tools npm ntp openssh-server openssl pass pigz prips software-properties-common syslinux psmisc pv python3-pip toilet unattended-upgrades unzip vim wget wireless-tools wpasupplicant"
+myPREINSTALLPACKAGES="aria2 apache2-utils cracklib-runtime curl dialog figlet fuse grc libcrack2 libpq-dev lsb-release net-tools software-properties-common toilet"
+myINSTALLPACKAGES="aria2 apache2-utils apparmor apt-transport-https aufs-tools bash-completion build-essential ca-certificates cgroupfs-mount cockpit cockpit-docker console-setup console-setup-linux cracklib-runtime curl debconf-utils dialog dnsutils docker.io docker-compose ethtool fail2ban figlet genisoimage git glances grc haveged html2text htop iptables iw jq kbd libcrack2 libltdl7 libpam-google-authenticator man mosh multitail net-tools npm ntp openssh-server openssl pass pigz prips software-properties-common sshpass syslinux psmisc pv python3-pip toilet unattended-upgrades unzip vim wget wireless-tools wpasupplicant"
 myINFO="\
 ###########################################
 ### T-Pot Installer for Debian (Stable) ###
@@ -158,8 +158,11 @@ myCOCKPIT_SOCKET="[Socket]
 ListenStream=
 ListenStream=64294
 "
-mySSHPORT="
+mySSHSETTINGS="
 Port 64295
+Match Group tpotlogs
+        PermitOpen 127.0.0.1:64305
+        ForceCommand /usr/bin/false
 "
 myRANDOM_HOUR=$(shuf -i 2-22 -n 1)
 myRANDOM_MINUTE=$(shuf -i 0-59 -n 1)
@@ -175,15 +178,11 @@ $myRANDOM_MINUTE $myDEL_HOUR * * *      root    curator --config /opt/tpot/etc/c
 # Uploaded binaries are not supposed to be downloaded
 */1 * * * *     root    mv --backup=numbered /data/dionaea/roots/ftp/* /data/dionaea/binaries/
 
-# Reboot every 12 hours
-27 */12 * * *      root    systemctl stop tpot && docker stop \$(docker ps -aq) || docker rm \$(docker ps -aq) || reboot
+# Daily reboot
+$myRANDOM_MINUTE $myRANDOM_HOUR * * 1-6      root    systemctl stop tpot && docker stop \$(docker ps -aq) && docker rm \$(docker ps -aq); reboot
 
 # Check for updated packages every sunday, upgrade and reboot
 $myRANDOM_MINUTE $myRANDOM_HOUR * * 0     root    apt-fast autoclean -y && apt-fast autoremove -y && apt-fast update -y && apt-fast upgrade -y && sleep 10 && reboot
-
-# Clean some system log
-0 */1 * * * rm /var/log/syslog* > /dev/null 2>&1
-0 */1 * * * rm /var/log/daemon.log* > /dev/null 2>&1
 "
 mySHELLCHECK='[[ $- == *i* ]] || return'
 myROOTPROMPT='PS1="\[\033[38;5;8m\][\[$(tput sgr0)\]\[\033[38;5;1m\]\u\[$(tput sgr0)\]\[\033[38;5;6m\]@\[$(tput sgr0)\]\[\033[38;5;4m\]\h\[$(tput sgr0)\]\[\033[38;5;6m\]:\[$(tput sgr0)\]\[\033[38;5;5m\]\w\[$(tput sgr0)\]\[\033[38;5;8m\]]\[$(tput sgr0)\]\[\033[38;5;1m\]\\$\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"'
@@ -294,21 +293,6 @@ function fuCHECKNET {
 # Install T-Pot dependencies
 function fuGET_DEPS {
   export DEBIAN_FRONTEND=noninteractive
-  # Determine fastest mirror
-  echo
-  echo "### Determine fastest mirror for your location."
-  echo
-  netselect-apt -n -a amd64 stable && cp sources.list /etc/apt/
-  mySOURCESCHECK=$(cat /etc/apt/sources.list | grep -c stable)
-  if [ "$mySOURCESCHECK" == "0" ]
-    then
-      echo "### Automatic mirror selection failed, using main mirror."
-      # Point to Debian (stable)
-tee /etc/apt/sources.list <<EOF
-deb http://deb.debian.org/debian stable main contrib non-free
-deb-src http://deb.debian.org/debian stable main contrib non-free
-EOF
-  fi
   echo
   echo "### Getting update information."
   echo
@@ -531,8 +515,9 @@ fi
 if [ "$myTPOT_DEPLOYMENT_TYPE" == "iso" ] || [ "$myTPOT_DEPLOYMENT_TYPE" == "user" ];
   then
     myCONF_TPOT_FLAVOR=$(dialog --keep-window --no-cancel --backtitle "$myBACKTITLE" --title "[ Choose Your T-Pot Edition ]" --menu \
-    "\nRequired: 8GB RAM, 128GB SSD\nRecommended: 8GB RAM, 256GB SSD" 15 70 6 \
+    "\nRequired: 8GB RAM, 128GB SSD\nRecommended: 8GB RAM, 256GB SSD" 15 70 7 \
     "STANDARD" "Honeypots, ELK, NSM & Tools" \
+    "LOG4J" "Log4Pot, ELK, NSM & Tools" \
     "SENSOR" "Just Honeypots, EWS Poster & NSM" \
     "INDUSTRIAL" "Conpot, RDPY, Vnclowpot, ELK, NSM & Tools" \
     "COLLECTOR" "Heralding, ELK, NSM & Tools" \
@@ -708,12 +693,14 @@ hash -r
 if ! [ "$myTPOT_DEPLOYMENT_TYPE" == "iso" ];
   then
     fuBANNER "Cloning T-Pot"
-    git clone https://github.com/TheoKlein/tpotce /opt/tpot
+    git clone https://github.com/sverre/tpotce /opt/tpot
 fi
 
 # Let's create the T-Pot user
-fuBANNER "Create user"
+fuBANNER "Create groups"
 addgroup --gid 2000 tpot
+addgroup tpotlogs
+fuBANNER "Create user"
 adduser --system --no-create-home --uid 2000 --disabled-password --disabled-login --gid 2000 tpot
 
 # Let's set the hostname
@@ -734,7 +721,7 @@ fuBANNER "Adjust ports"
 mkdir -p /etc/systemd/system/cockpit.socket.d
 echo "$myCOCKPIT_SOCKET" | tee /etc/systemd/system/cockpit.socket.d/listen.conf
 sed -i '/^port/Id' /etc/ssh/sshd_config
-echo "$mySSHPORT" | tee -a /etc/ssh/sshd_config
+echo "$mySSHSETTINGS" | tee -a /etc/ssh/sshd_config
 
 # Do not allow root login for cockpit
 sed -i '2i\auth requisite pam_succeed_if.so uid >= 1000' /etc/pam.d/cockpit
@@ -744,6 +731,10 @@ case $myCONF_TPOT_FLAVOR in
   STANDARD)
     fuBANNER "STANDARD"
     ln -s /opt/tpot/etc/compose/standard.yml $myTPOTCOMPOSE
+  ;;
+  LOG4J)
+    fuBANNER "LOG4J"
+    ln -s /opt/tpot/etc/compose/log4j.yml $myTPOTCOMPOSE
   ;;
   SENSOR)
     fuBANNER "SENSOR"
@@ -797,6 +788,23 @@ echo "$mySYSTEMDFIX" | tee /etc/systemd/network/99-default.link
 fuBANNER "Add cronjobs"
 echo "$myCRONJOBS" | tee -a /etc/crontab
 
+### For some honeypots to work we need to ensure ntp.service is not listening
+echo "### Ensure ntp.service is not listening to avoid potential port conflict with ddospot."
+myNTP_IF_DISABLE="interface ignore wildcard
+interface ignore 127.0.0.1
+interface ignore ::1"
+
+if [ "$(cat /etc/ntp.conf | grep "interface ignore wildcard" | wc -l)" != "1" ];
+  then
+    echo "### Found active ntp listeners and updating config."
+    echo "$myNTP_IF_DISABLE" | tee -a /etc/ntp.conf
+    echo "### Restarting ntp.service for changes to take effect."
+    systemctl stop ntp.service
+    systemctl start ntp.service
+  else
+    echo "### Found no active ntp listeners."
+fi
+
 # Let's create some files and folders
 fuBANNER "Files & folders"
 mkdir -vp /data/adbhoney/{downloads,log} \
@@ -804,23 +812,29 @@ mkdir -vp /data/adbhoney/{downloads,log} \
          /data/conpot/log \
          /data/citrixhoneypot/logs \
          /data/cowrie/{downloads,keys,misc,log,log/tty} \
-	 /data/dicompot/{images,log} \
+         /data/ddospot/{bl,db,log} \
+         /data/dicompot/{images,log} \
          /data/dionaea/{log,bistreams,binaries,rtp,roots,roots/ftp,roots/tftp,roots/www,roots/upnp} \
          /data/elasticpot/log \
          /data/elk/{data,log} \
+         /data/endlessh/log \
          /data/fatt/log \
          /data/honeytrap/{log,attacks,downloads} \
          /data/glutton/log \
+         /data/hellpot/log \
          /data/heralding/log \
+         /data/honeypots/log \
          /data/honeypy/log \
          /data/honeysap/log \
-	 /data/ipphoney/log \
+         /data/ipphoney/log \
+         /data/log4pot/{log,payloads} \
          /data/mailoney/log \
          /data/medpot/log \
          /data/nginx/{log,heimdall} \
          /data/emobility/log \
          /data/ews/conf \
          /data/rdpy/log \
+         /data/redishoneypot/log \
          /data/spiderfoot \
          /data/suricata/log \
          /data/tanner/{log,files} \
